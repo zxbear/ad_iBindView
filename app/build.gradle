@@ -27,4 +27,7 @@ android {
 
 dependencies {
     dependenciesID.each{k,v -> implementation v}
+
+    implementation project(":iBindView_annotation")
+    annotationProcessor project(":iBindView_compiler")
 }
