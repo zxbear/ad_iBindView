@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 }
-
 group = binView_group
 version = '1.0'
 
@@ -16,5 +15,16 @@ dependencies {
     implementation androidx_annotation
 }
 
-
-
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.java
+                groupId = binView_group
+                artifactId = 'android-example'
+                version = '1.0'
+            }
+        }
+    }
+}
