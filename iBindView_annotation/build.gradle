@@ -22,7 +22,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.java
                 groupId = binView_group
-                artifactId = 'android-example'
+                artifactId = 'annotation'
                 version = '1.0'
             }
         }
