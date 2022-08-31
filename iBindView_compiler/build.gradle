@@ -1,0 +1,34 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+group = binView_group
+version = '1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation project(':iBindView_annotation')
+    implementation javapeot
+    implementation auto_service
+    annotationProcessor auto_service
+    //处理注解器增量问题
+    implementation incap.runtime
+    annotationProcessor incap.processor
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.java
+                groupId = binView_group
+                artifactId = 'comiler'
+                version = '1.0'
+            }
+        }
+    }
+}
