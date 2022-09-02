@@ -17,4 +17,5 @@
 rootProject.name = "ad_iBindView"
 include ':app'
 include ':iBindView_annotation'
-include ':iBindView_compiler'
+//include ':iBindView_compiler'
+include ':iBindView_api'

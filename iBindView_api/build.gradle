@@ -1,16 +1,13 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
 }
 
 android {
-    compileSdk androidID.compileSdk
+    compileSdk androidID.compileSdkVersion
 
     defaultConfig {
-        applicationId androidID.applicationId
-        minSdk androidID.minSdk
-        targetSdk androidID.targetSdk
-        versionCode androidID.versionCode
-        versionName androidID.versionName
+        minSdkVersion androidID.minSdkVersion
+        targetSdkVersion androidID.targetSdkVersion
     }
 
     buildTypes {
@@ -28,6 +25,5 @@ android {
 dependencies {
     dependenciesID.each{k,v -> implementation v}
 
-    implementation project(":iBindView_annotation")
-    //annotationProcessor project(":iBindView_compiler")
+    api project(":iBindView_annotation")
 }

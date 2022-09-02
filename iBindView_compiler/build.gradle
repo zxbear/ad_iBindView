@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'maven'
+    id 'com.github.dcendents.android-maven'
 }
 group = binView_group
 version = '1.0'
