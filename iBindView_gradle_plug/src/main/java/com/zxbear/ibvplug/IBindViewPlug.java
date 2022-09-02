@@ -30,10 +30,8 @@ import groovy.util.XmlSlurper;
 public class IBindViewPlug implements Plugin<Project> {
     public static final String TAG = "IBindViewPlug ==> ";
 
-
     @Override
     public void apply(Project project) {
-
         project.getPlugins().all(plugin -> {
             //判断是否为library
             if (plugin instanceof LibraryPlugin) {

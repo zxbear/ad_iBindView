@@ -3,8 +3,6 @@ plugins {
     id 'maven-publish'
     id 'com.github.dcendents.android-maven'
 }
-group = binView_group
-version = '1.0'
 
 
 java {
@@ -14,17 +12,4 @@ java {
 
 dependencies {
     implementation androidx_annotation
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.java
-                groupId = binView_group
-                artifactId = 'annotation'
-                version = '1.0'
-            }
-        }
-    }
 }
