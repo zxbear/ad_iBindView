@@ -15,7 +15,7 @@ ext {
             constraintlayout: 'androidx.constraintlayout:constraintlayout:2.0.4',
     ]
     //Gradle插件
-    buildGradle = 'com.android.tools.build:gradle:3.2.0'
+    buildGradle = 'com.android.tools.build:gradle:4.1.1'
     //androidx注解类
     androidx_annotation = 'androidx.annotation:annotation:1.2.0'
     //注解器自动注册

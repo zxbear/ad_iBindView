@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'java-gradle-plugin'
+}
+group = binView_group
+version = '1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation javapeot//JavaPoet 编写代码使用
+    implementation buildGradle
+}
+
+publishing{
+    publications {
+        IBindViewPlug(MavenPublication){
+            from components.java
+            groupId 'com.zxbear.bindview'
+            artifactId 'ibind'
+            version '1.0'
+        }
+    }
+}
