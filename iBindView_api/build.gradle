@@ -1,9 +1,11 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
+    id 'com.github.dcendents.android-maven'
 }
 
 android {
-    compileSdk androidID.compileSdkVersion
+    compileSdkVersion androidID.compileSdk
 
     defaultConfig {
         minSdkVersion androidID.minSdkVersion
@@ -27,3 +29,4 @@ dependencies {
 
     api project(":iBindView_annotation")
 }
+
