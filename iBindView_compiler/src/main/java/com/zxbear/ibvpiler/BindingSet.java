@@ -28,8 +28,8 @@ public class BindingSet {
     private final static String par_name = "target";
     private final static String par2_name = "source";
     //CLASS
-    public static final ClassName UTILS = ClassName.get("com.zxbear.ibva", "IBindUtils");
-    public static final ClassName UnIBind = ClassName.get("com.zxbear.ibva", "UnIBind");
+    public static final ClassName UTILS = ClassName.get("com.zxbear.ibvapi", "IBindUtils");
+    public static final ClassName UnIBind = ClassName.get("com.zxbear.ibvapi", "UnIBind");
     public static final ClassName UiThread = ClassName.get("androidx.annotation", "UiThread");
     public static final ClassName IllegalStateException = ClassName.get("java.lang", "IllegalStateException");
     public static final ClassName view = ClassName.get("android.view", "View");
