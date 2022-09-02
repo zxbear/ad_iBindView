@@ -1,8 +1,2 @@
-language: android
-
 jdk:
-  - oraclejdk8
-
-before_install:
-  - sdk install java 1.8.0_191-oracle
-  - sdk use java 1.8.0_191-oracle
+  - openjdk11
