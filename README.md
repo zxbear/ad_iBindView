@@ -41,3 +41,10 @@ public class MainActivity extends AppCompatActivity {
     }
 }
  ```
+ 
+ **II.Libray additional Configuration**
+1. Adding dependencies in your project build.gradle
+ ```
+ 111
+ ```
+2. 
