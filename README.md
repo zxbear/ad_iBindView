@@ -2,12 +2,12 @@
 The purpose of the framework is to help developers initialize annotations on Views
 ```
 
-**I. APP Usage Configuration**
+**I.Necessary Configuration**
 1. Adding dependencies and configurations
  ```
  android {
   ...
-  // Butterknife requires Java 8.
+  // iBindView requires Java 8.
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
