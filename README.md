@@ -3,7 +3,7 @@ The purpose of the framework is to help developers initialize annotations on Vie
 ```
 
 **I.Necessary Configuration**
-1. Adding dependencies and configurations
+1. Adding dependencies and configurations in module build.gradle
  ```
  android {
   ...
