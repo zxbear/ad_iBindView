@@ -19,7 +19,7 @@ dependencies {
   annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.1'
 }
  ```
-2. Used in the app
+2. Used in the Activity
  ```
 public class MainActivity extends AppCompatActivity {
     //Annotating a single View
@@ -73,4 +73,23 @@ dependencies {
   annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.1'
 }
  ```
-3. 
+3. Used in the activity
+ ```
+ public class MainActivity extends AppCompatActivity {
+    //user R2
+    @IBindView(R2.id.tv)
+    public TextView tv;
+
+    @IBindViews({R2.id.image1,R2.id.image2})
+    List<ImageView> imgs;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        IBinds.bind(this);
+
+        tv.setText(imgs.size());
+    }
+}
+ ```
