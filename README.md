@@ -19,6 +19,5 @@ dependencies {
   annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.1'
 }
  ```
-3. Used in the app
+2. Used in the app
 
-2.
