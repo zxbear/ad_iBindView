@@ -20,4 +20,23 @@ dependencies {
 }
  ```
 2. Used in the app
+ ```
+public class MainActivity extends AppCompatActivity {
+    //Annotating a single View
+    @IBindView(R.id.tv)
+    public TextView tv;
+    //Annotating multiple Views
+    @IBindViews({R.id.btn1,R.id.btn2,R.id.btn3})
+    List<Button> btns;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //Initialize the view
+        IBinds.bind(this);
+        //Using ids
+        tv.setText(btns.size());
+    }
+}
+ ```
