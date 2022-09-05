@@ -49,7 +49,7 @@ buildscript {
     dependencies {
         ...
         //add Plug-in dependencies
-        classpath 'com.github.zxbear.ad_iBindView:iBindView_gradle_plug:v1.0.98'
+        classpath 'com.github.zxbear.ad_iBindView:iBindView_gradle_plug:v1.1.1'
     }
 }
  ```
