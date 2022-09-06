@@ -29,5 +29,5 @@ dependencies {
     dependenciesID.each{k,v -> implementation v}
 
     implementation project(":iBindView_api")
-    //annotationProcessor project(":iBindView_compiler")
+    annotationProcessor project(":iBindView_compiler")
 }

@@ -9,6 +9,9 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.Map;
+import java.util.Set;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
@@ -33,6 +36,7 @@ public class BindingSet {
     public static final ClassName UiThread = ClassName.get("androidx.annotation", "UiThread");
     public static final ClassName IllegalStateException = ClassName.get("java.lang", "IllegalStateException");
     public static final ClassName view = ClassName.get("android.view", "View");
+    public static final String LIST_TYPE = "java.util.List";
     //UnIBind方法体内容
     private StringBuilder unIBindStr;
 
@@ -74,7 +78,7 @@ public class BindingSet {
      *
      * @param element
      */
-    public void addField(Element element, String idName) {
+    public void addField(Element element, CodeBlock codeBlock) {
         String targetParm = par_name + "." + element.getSimpleName();
         StringBuilder sb = new StringBuilder();
         sb.append(targetParm + " = ");
@@ -82,33 +86,28 @@ public class BindingSet {
         methodSpec.addStatement(sb.toString(),
                 UTILS,
                 par2_name,
-                idName,
+                codeBlock,
                 element.asType()
         );
         //bind参数置空
         unIBindStr.append(targetParm + " = null;\n");
     }
 
-    public void addFields(Element element, ClassName viewClass, String[] idNames) {
-        if (null != idNames && idNames.length > 0) {
+    public void addFields(Element element, ClassName viewClass, Map<Integer, Id> idNames) {
+        Set<Integer> ids = idNames.keySet();
+        if (ids.size() > 0) {
             String targetParm = par_name + "." + element.getSimpleName();
             CodeBlock.Builder code = CodeBlock.builder();
             code.add(targetParm + " = ");
             code.add("$T.listFilteringNull(", UTILS);
-            for (int i = 0; i < idNames.length; i++) {
-                if (i != idNames.length - 1) {
-                    code.add("$T.findRequiredViewAsType($L, $L, $T.class),",
-                            UTILS,
-                            par2_name,
-                            idNames[i],
-                            viewClass);
-                } else {
-                    code.add("$T.findRequiredViewAsType($L, $L, $T.class)",
-                            UTILS,
-                            par2_name,
-                            idNames[i],
-                            viewClass);
-                }
+            int i = 0;
+            for (Integer id : ids) {
+                code.add("$T.findRequiredViewAsType($L, $L, $T.class)" + (i == ids.size()-1 ? "" : ","),
+                        UTILS,
+                        par2_name,
+                        idNames.get(id).getCode(),
+                        viewClass);
+                i++;
             }
             code.add(")");
             methodSpec.addStatement(code.build());

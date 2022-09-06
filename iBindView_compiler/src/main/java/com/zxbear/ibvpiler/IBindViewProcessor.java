@@ -3,7 +3,10 @@ package com.zxbear.ibvpiler;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.sun.source.util.Trees;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.TreeScanner;
 import com.zxbear.ibvannot.IBindView;
 import com.zxbear.ibvannot.IBindViews;
 
@@ -14,10 +17,12 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -46,6 +51,7 @@ public class IBindViewProcessor extends AbstractProcessor {
     public static final String VIEW_TYPE = "android.view.View";
     public static final String LIST_TYPE = "java.util.List";
     private Trees trees;
+    private final RScanner rScanner = new RScanner();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -99,6 +105,7 @@ public class IBindViewProcessor extends AbstractProcessor {
 
     private Map<TypeElement, BindingSet> findAndParseTargets(RoundEnvironment env) {
         Map<TypeElement, BindingSet> spCode = new HashMap<>();
+
         for (Element item : env.getElementsAnnotatedWith(IBindView.class)) {
             TypeElement tE = (TypeElement) item.getEnclosingElement();
             boolean isField = true;
@@ -113,43 +120,64 @@ public class IBindViewProcessor extends AbstractProcessor {
                     bindingSet.init(tE);
                     spCode.put(tE, bindingSet);
                 }
-                //item.getAnnotation(IBindView.class)
-                spCode.get(tE).addField(item, getViewIdParmsByBindViewsElement(item)[0]);
-                //spCode.get(tE).addField(item, item.getAnnotation(IBindView.class).value()+"");
+                setViewIDforField(item, spCode.get(tE));
             }
         }
 
         for (Element item : env.getElementsAnnotatedWith(IBindViews.class)) {
             //获取泛型
             String pars = item.asType().toString();
-            if (pars.contains("<")) {
-                if (pars.substring(0,pars.indexOf("<")).equals(LIST_TYPE)){
-                    String fxAll = pars.substring(pars.indexOf("<") + 1, pars.indexOf(">"));
-                    String pack = fxAll.substring(0, fxAll.lastIndexOf("."));
-                    String clName = fxAll.substring(fxAll.lastIndexOf(".") + 1);
-                    ClassName cls = ClassName.get(pack, clName);
-                    if (cls != null) {
-                        TypeElement tE = (TypeElement) item.getEnclosingElement();
-                        BindingSet bindingSet;
-                        if (!spCode.containsKey(tE)) {
-                            bindingSet = new BindingSet();
-                            bindingSet.init(tE);
-                            spCode.put(tE, bindingSet);
-                        }
-                        spCode.get(tE).addFields(item, cls, getViewIdParmsByBindViewsElement(item));
-                    } else {
-                        errorPrint("The list <T> cast error", item);
+            if (pars.contains(LIST_TYPE)) {
+                //获取泛型-ClassName
+                String fxAll = pars.substring(pars.indexOf("<") + 1, pars.indexOf(">"));
+                String pack = fxAll.substring(0, fxAll.lastIndexOf("."));
+                String clName = fxAll.substring(fxAll.lastIndexOf(".") + 1);
+                ClassName cls = ClassName.get(pack, clName);
+                if (cls != null) {
+                    TypeElement tE = (TypeElement) item.getEnclosingElement();
+                    BindingSet bindingSet;
+                    if (!spCode.containsKey(tE)) {
+                        bindingSet = new BindingSet();
+                        bindingSet.init(tE);
+                        spCode.put(tE, bindingSet);
                     }
-                }else {
-                    errorPrint("must be a List or array", item);
+                    setViewIDforFields(item, cls, spCode.get(tE));
+                } else {
+                    errorPrint("The list <T> cast error", item);
                 }
             } else {
-                errorPrint("LIST IS ADD <>", item);
+                errorPrint("must be a List", item);
             }
         }
         return spCode;
     }
 
+    /**
+     * 获取IBindView的树节点，拿到R.id.xx-字段
+     *
+     * @param element
+     * @param bindingSet
+     */
+    private void setViewIDforField(Element element, BindingSet bindingSet) {
+        JCTree tree = (JCTree) trees.getTree(element, getMirror(element, IBindView.class));
+        if (tree != null) {
+            rScanner.reset();
+            tree.accept(rScanner);
+            Set<Integer> set = rScanner.resourceIds.keySet();
+            for (Integer integer : set) {
+                bindingSet.addField(element, rScanner.resourceIds.get(integer).getCode());
+            }
+        }
+    }
+
+    private void setViewIDforFields(Element element, ClassName viewClass, BindingSet bindingSet) {
+        JCTree tree = (JCTree) trees.getTree(element, getMirror(element, IBindViews.class));
+        if (tree != null) {
+            rScanner.reset();
+            tree.accept(rScanner);
+            bindingSet.addFields(element,viewClass,rScanner.resourceIds);
+        }
+    }
 
     /**
      * 获取节点的继承关系-判断是否是view
@@ -195,27 +223,9 @@ public class IBindViewProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, element);
     }
 
-    /**
-     * 获取IBindView的树节点，拿到R.id.xx-字段
-     *
-     * @param element
-     * @return
-     */
-    private String[] getViewIdParmsByBindViewsElement(Element element) {
-        JCTree tree = (JCTree) trees.getTree(element, getMirror(element, IBindView.class));
-        String idName = tree.toString().replace("R2", "R");
-        if (idName.contains("{")) {
-            return idName.substring(idName.indexOf("{") + 1, idName.indexOf("}")).split(",");
-        } else {
-            int end = idName.lastIndexOf(")");
-            return new String[]{idName.substring(idName.indexOf("R"), end)};
-        }
-    }
-
     private static AnnotationMirror getMirror(Element element,
                                               Class<? extends Annotation> annotation) {
         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-            //System.out.println("AnnotationMirror => " + annotationMirror.getAnnotationType());
             if (annotationMirror.getAnnotationType().toString().equals(annotation.getCanonicalName())) {
                 return annotationMirror;
             }
@@ -250,6 +260,60 @@ public class IBindViewProcessor extends AbstractProcessor {
             hasError = true;
         }
         return hasError;
+    }
+
+    private static class RScanner extends TreeScanner {
+        Map<Integer, Id> resourceIds = new LinkedHashMap<>();
+
+        @Override
+        public void visitIdent(JCTree.JCIdent jcIdent) {
+            super.visitIdent(jcIdent);
+            Symbol symbol = jcIdent.sym;
+            if (symbol.type instanceof Type.JCPrimitiveType) {
+                Id id = parseId(symbol);
+                if (id != null) {
+                    resourceIds.put(id.getValue(), id);
+                }
+            }
+        }
+
+        @Override
+        public void visitSelect(JCTree.JCFieldAccess jcFieldAccess) {
+            Symbol symbol = jcFieldAccess.sym;
+            parseId(symbol);
+            Id id = parseId(symbol);
+            if (id != null) {
+                resourceIds.put(id.getValue(), id);
+            }
+        }
+
+        @Nullable
+        private Id parseId(Symbol symbol) {
+            Id id = null;
+            if (symbol.getEnclosingElement() != null
+                    && symbol.getEnclosingElement().getEnclosingElement() != null
+                    && symbol.getEnclosingElement().getEnclosingElement().enclClass() != null) {
+                try {
+                    int value = (Integer) ((Symbol.VarSymbol) symbol).getConstantValue();
+                    id = new Id(value, symbol);
+                } catch (Exception ignored) {
+                }
+            }
+            return id;
+        }
+
+        @Override
+        public void visitLiteral(JCTree.JCLiteral jcLiteral) {
+            try {
+                int value = (Integer) jcLiteral.value;
+                resourceIds.put(value, new Id(value));
+            } catch (Exception ignored) {
+            }
+        }
+
+        void reset() {
+            resourceIds.clear();
+        }
     }
 
 }
