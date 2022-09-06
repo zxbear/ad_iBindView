@@ -15,8 +15,8 @@ The purpose of the framework is to help developers initialize annotations on Vie
 }
 
 dependencies {
-  implementation 'com.github.zxbear.ad_iBindView:iBindView_api:v1.1.1'
-  annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.1'
+  implementation 'com.github.zxbear.ad_iBindView:iBindView_api:v1.1.3'
+  annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.3'
 }
  ```
 2. Used in the Activity
@@ -49,7 +49,7 @@ buildscript {
     dependencies {
         ...
         //add Plug-in dependencies
-        classpath 'com.github.zxbear.ad_iBindView:iBindView_gradle_plug:v1.1.1'
+        classpath 'com.github.zxbear.ad_iBindView:iBindView_gradle_plug:v1.1.3'
     }
 }
  ```
@@ -69,8 +69,8 @@ android {
 }
 
 dependencies {
-  implementation 'com.github.zxbear.ad_iBindView:iBindView_api:v1.1.1'
-  annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.1'
+  implementation 'com.github.zxbear.ad_iBindView:iBindView_api:v1.1.3'
+  annotationProcessor 'com.github.zxbear.ad_iBindView:iBindView_compiler:v1.1.3'
 }
  ```
 3. Used in the activity
